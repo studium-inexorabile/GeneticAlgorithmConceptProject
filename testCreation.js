@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+//creates random strings to use as answer
 const randomString = (length) => {
     var result           = '';
     var characters       = ' abcdefghijklmnopqrstuvwxyz0123456789';
@@ -10,6 +11,7 @@ const randomString = (length) => {
     return result;
 }
 
+//creates random answers and weight for each question
 const answerCreator = () => {
     let answerArray = [];
     let multipleChoice = {
@@ -28,6 +30,7 @@ const answerCreator = () => {
     return answerArray
 }
 
+//creates test with random strings and random answers
 const test = {}
 const questionCreator = () => {
     for(let i = 1; i <= 10; i++){
@@ -37,8 +40,9 @@ const questionCreator = () => {
         }
     }
 }
-questionCreator();
 
+//evaluates created test and provides metrics in terminal window
+let disparity = 0;
 const evaluateTest = () => {
     let min = 0;
     let max = 0;
@@ -47,10 +51,13 @@ const evaluateTest = () => {
         min += parseFloat(Math.min(...weights))
         max += parseFloat(Math.max(...weights))
     }
+    
+    disparity = max - min;
     console.log("Maximum test score: ", max)
     console.log("Minimum test score: ", min)
     console.log()
-    let breakpoints = ((max - min) / 5)
+    console.log("Min / Max disparity : ", disparity)
+    let breakpoints = ((disparity) / 5)
     console.log("Potential breakpoints")
     console.log("Low - <", (breakpoints * 1  + min)  + .1)
     console.log("Medium-Low - <", (breakpoints * 2  + min)  + .1)
@@ -58,7 +65,13 @@ const evaluateTest = () => {
     console.log("Medium-High - <", (breakpoints * 4  + min)  + .1)
     console.log("High - <", (breakpoints * 5  + min)  + .1)
 }
-evaluateTest()
+
+//will continue to create and evaluate tests until a certain disparity is reached
+//40 seems to be the max disparity
+while(disparity < 40) {
+    questionCreator();
+    evaluateTest()
+}
 
 const json = JSON.stringify(test)
 fs.writeFileSync('./test.json', json, (err) => {

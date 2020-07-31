@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+//pulls data from test.json
 let test = {}
 try {
     let jsonString = fs.readFileSync('./test.json')
@@ -9,6 +10,7 @@ try {
     return
 }
 
+//pulls data from takenTest.json
 let takenTest = {}
 try {
     let jsonString = fs.readFileSync('./takenTest.json')
@@ -18,7 +20,7 @@ try {
     return
 }
 
-let testScore = {}
+//dictionary to use for converting between array position and answer choice
 let reverseMultiple = {
     A: 0,
     B:1,
@@ -26,6 +28,10 @@ let reverseMultiple = {
     D:3,
     E:4
 }
+
+//pulls answers and related weights from taken test
+//combined selected weights into one score
+let testScore = {}
 const scoreTest = () => {
     for(let i = 1; i <= 10; i ++){
         testScore[i] = {
@@ -40,4 +46,5 @@ const scoreTest = () => {
     return score
 }
 
+//logs score to terminal window
 console.log(scoreTest())
