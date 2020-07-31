@@ -1,0 +1,17 @@
+{
+  "name": "vant4gemock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "testCreation.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create": "testCreation.js",
+    "take": "testTaking.js",
+    "score": "testScoring.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security"
+  }
+}
