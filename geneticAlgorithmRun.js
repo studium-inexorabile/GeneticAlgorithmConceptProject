@@ -65,8 +65,8 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
     let result1 = {} , result2 = {}
     phenoTypeA = tryParse(phenoTypeA)
     phenoTypeB = tryParse(phenoTypeB)
-    console.log(phenoTypeA)
-    console.log(phenoTypeB)
+    // console.log(phenoTypeA)
+    // console.log(phenoTypeB)
     for(let i = 0; i < 5; i++){
         result1[i + 1] = phenoTypeA[i + 1]
         result2[i + 1] = phenoTypeB[i + 1]
@@ -75,7 +75,7 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
         result1[i + 1] = phenoTypeB[i + 1]
         result2[i + 1] = phenoTypeA[i + 1]
     }
-    console.log([result1,result2])
+    // console.log([result1,result2])
 	return [result1,result2]
 }
 

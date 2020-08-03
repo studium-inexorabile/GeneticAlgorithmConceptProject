@@ -4,4 +4,4 @@ const testScoring = require('./testScoring')
 
 testCreation();
 testTaking();
-testScoring();
+// testScoring();
