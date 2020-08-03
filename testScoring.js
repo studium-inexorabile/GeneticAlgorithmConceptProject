@@ -50,6 +50,7 @@ const testScoring = () => {
     //logs score to terminal window
     console.log()
     console.log("Test score : ", scoreTest())
+    return scoreTest();
 }
 
 module.exports = testScoring

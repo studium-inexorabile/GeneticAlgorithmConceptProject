@@ -25,13 +25,14 @@ const teskTaking = (answers = []) => {
     }
     //writes answers to takenTest.json
     const json = JSON.stringify(takenTest)
-    fs.writeFileSync('./takenTest.json', json, (err) => {
-        if(err){
-            console.log(err)
-        }else{
-            console.log("success")
-        }
-    })
+    // fs.writeFileSync('./takenTest.json', json, (err) => {
+    //     if(err){
+    //         console.log(err)
+    //     }else{
+    //         console.log("success")
+    //     }
+    // })
+    return json
 }
 
 module.exports = teskTaking
