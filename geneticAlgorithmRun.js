@@ -12,6 +12,7 @@ let config = {
     populationSize: 6
 }
 let geneticalgorithm = GeneticAlgorithmConstructor( config )
+
 const reverseMultiple = {
     A: 0,
     B:1,
@@ -31,7 +32,7 @@ const tryParse = (item) => {
     }else{
         newItem = item
     }
-    return item
+    return newItem
 }
 
 // function used to introduce mutation to population
@@ -45,7 +46,7 @@ function mutationFunction (oldPhenotype) {
     let multipleChoice = ['A','B','C','D','E']
     for(let i = 1; i <= 10; i++){
         // value can be changed here to control amount of genes in phenotype that
-        // can be changed. higher number means more genes are mutated
+        // can be changed. higher number means less genes are mutated
         if(Math.random() > 0.5){
             resultPhenotype[i] = {
                 chosenAnswer : multipleChoice[Math.floor(Math.random() * multipleChoice.length)]
@@ -64,6 +65,8 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
     let result1 = {} , result2 = {}
     phenoTypeA = tryParse(phenoTypeA)
     phenoTypeB = tryParse(phenoTypeB)
+    console.log(phenoTypeA)
+    console.log(phenoTypeB)
     for(let i = 0; i < 5; i++){
         result1[i + 1] = phenoTypeA[i + 1]
         result2[i + 1] = phenoTypeB[i + 1]
@@ -72,15 +75,16 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
         result1[i + 1] = phenoTypeB[i + 1]
         result2[i + 1] = phenoTypeA[i + 1]
     }
+    console.log([result1,result2])
 	return [result1,result2]
 }
 
-// function to determine correctness of phenotype.
+// function to determine fitness of phenotype.
 function fitnessFunction(phenotype) {
     let fitness = 0
     let testScore = {}
     phenotype = tryParse(phenotype)
-    //creates an object that combines the answers(genes) of a phenotype
+    // creates an object that combines the answers(genes) of a phenotype
     // and its corresponding weight (found in test)
     for(let i = 1; i <= 10; i ++){
         testScore[i] = {
@@ -136,28 +140,29 @@ while (continueEvolve) {
             }
         break;
         case "low-medium":
-            if(score > 18.1 && score < 26.1){
+            if(score >= 18.1 && score < 26.1){
                 continueEvolve = false;
             }
         break;
         case "medium":
-            if(score > 26.1 && score < 34.1){
+            if(score >= 26.1 && score < 34.1){
                 continueEvolve = false;
             }
         break;
         case "high-medium":
-            if(score > 34.1 && score < 42.1){
+            if(score >= 34.1 && score < 42.1){
                 continueEvolve = false;
             }
         break;
         case "high":
-            if(score > 42.1 && score < 50.1){
+            if(score >= 42.1 && score < 50.1){
                 continueEvolve = false;
             }
         break;
     }
     generation++;
 
+    //method evolves to next generation
     geneticalgorithm.evolve()
 
     console.log("**Generation - ", generation)
