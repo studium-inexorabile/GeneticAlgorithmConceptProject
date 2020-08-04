@@ -9,10 +9,11 @@ let config = {
     crossoverFunction: crossoverFunction,
     fitnessFunction: fitnessFunction,
     population: [ JSON.stringify({"1":{"chosenAnswer":"A"},"2":{"chosenAnswer":"A"},"3":{"chosenAnswer":"A"},"4":{"chosenAnswer":"A"},"5":{"chosenAnswer":"A"},"6":{"chosenAnswer":"A"},"7":{"chosenAnswer":"A"},"8":{"chosenAnswer":"A"},"9":{"chosenAnswer":"A"},"10":{"chosenAnswer":"A"}}) ],
-    populationSize: 6
+    populationSize: 1000
 }
 let geneticalgorithm = GeneticAlgorithmConstructor( config )
 
+//variables
 const reverseMultiple = {
     A: 0,
     B:1,
@@ -20,9 +21,10 @@ const reverseMultiple = {
     D:3,
     E:4
 }
-
+const multipleChoice = ['A','B','C','D','E']
 // command line argument that determines target range (options: "low", "low-medium", "medium", "high-medium", "high")
-const goal = process.argv[2]
+let goal = process.argv[2]
+if(!goal) goal = 'medium' 
 
 // helper function try parse passed in JSON
 const tryParse = (item) => {
@@ -43,11 +45,10 @@ function mutationFunction (oldPhenotype) {
     // higher number means less mutation
      if (Math.random() > 0.8) return oldPhenotype;
 
-    let multipleChoice = ['A','B','C','D','E']
     for(let i = 1; i <= 10; i++){
         // value can be changed here to control amount of genes in phenotype that
         // can be changed. higher number means less genes are mutated
-        if(Math.random() > 0.5){
+        if(Math.random() >= 0.5){
             resultPhenotype[i] = {
                 chosenAnswer : multipleChoice[Math.floor(Math.random() * multipleChoice.length)]
             }
@@ -162,28 +163,31 @@ while (continueEvolve) {
     }
     generation++;
 
-    //method evolves to next generation
+    //method continues to next generation
     geneticalgorithm.evolve()
-
-    console.log("**Generation - ", generation)
-    console.log("**Best score of generation - ", geneticalgorithm.bestScore())
+    // console.log("**Generation - ", generation)
+    // console.log("**Best score of generation - ", geneticalgorithm.bestScore())
 }
 
 // score for best phenotype is calculated so that it can be displayed.
 // relevant metrics are displayed for correct phenotype
-let finalBestScore = 0;
-let pheno = tryParse(geneticalgorithm.best())
-let testScore = {};
-for(let i = 1; i <= 10; i ++){
-    testScore[i] = {
-        weight : test[i]["answers"][reverseMultiple[pheno[i]["chosenAnswer"]]]["weight"]
+const runMetrics = () => {
+    let finalBestScore = 0;
+    let pheno = tryParse(geneticalgorithm.best())
+    let testScore = {};
+    for(let i = 1; i <= 10; i ++){
+        testScore[i] = {
+            weight : test[i]["answers"][reverseMultiple[pheno[i]["chosenAnswer"]]]["weight"]
+        }
     }
+    for(let i in testScore){
+        finalBestScore += testScore[i]['weight']
+    }
+    let algoStop = process.hrtime(algoStart)
+    console.log("\nBest phenotype: ", pheno)
+    console.log("Final score: ", finalBestScore)
+    console.log("Algorithm completed in " + generation + " generations.")
+    console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
 }
-for(let i in testScore){
-    finalBestScore += testScore[i]['weight']
-}
-console.log("\nBest phenotype: ", pheno)
-console.log("Algorithm completed in " + generation + " generations.")
-console.log("Final score: ", finalBestScore)
-let algoStop = process.hrtime(algoStart)
-console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
+
+runMetrics();

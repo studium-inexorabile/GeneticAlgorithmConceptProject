@@ -14,5 +14,8 @@
   "dependencies": {
     "fs": "0.0.1-security",
     "geneticalgorithm": "^1.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0"
   }
 }
