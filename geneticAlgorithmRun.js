@@ -23,11 +23,11 @@ let config = {
     crossoverFunction: crossoverFunction,
     fitnessFunction: fitnessFunction,
     population: [createPhenotype()],
-    populationSize: 1000
+    populationSize: 10
 }
 let geneticalgorithm = GeneticAlgorithmConstructor( config ) 
 
-// helper function try parse passed in JSON
+// helper function that will try to parse passed in JSON
 const tryParse = (item) => {
     let newItem;
     if(typeof item == "string"){
@@ -38,6 +38,7 @@ const tryParse = (item) => {
     return newItem
 }
 
+//returns a randomly filled phenotype to populate GA
 function createPhenotype() {
     let phenotype = {}
     for(let i = 1; i <= 10; i++){
@@ -71,8 +72,8 @@ function mutationFunction(oldPhenotype) {
 }
 
 // function 'mates' top performers by taking two phenotypes 
-// and creating two new phenotypes by halving the parents
-// and putting the halves together with the other parent's halves
+// and creating two new phenotypes by halving copies of the parents
+// and transposing those halves
 function crossoverFunction(phenoTypeA, phenoTypeB) {
     let result1 = {} , result2 = {}
     phenoTypeA = tryParse(phenoTypeA)
@@ -91,7 +92,7 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
 	return [result1,result2]
 }
 
-// function to determine fitness of phenotype.
+// function to determine fitness of phenotype
 function fitnessFunction(phenotype) {
     let fitness = 0
     let testScore = {}
@@ -136,7 +137,7 @@ function fitnessFunction(phenotype) {
             }
         break;
     }
-    return fitness
+    return Math.abs(fitness)
 }
 
 // loop continues to run algorithm and evolve new generations until given criteria is met
@@ -182,20 +183,10 @@ const runGeneticAlgorithm = () => {
 // score for best phenotype is calculated so that it can be displayed.
 // relevant metrics are displayed for correct phenotype
 const runMetrics = () => {
-    let finalBestScore = 0;
-    let pheno = tryParse(geneticalgorithm.best())
-    let testScore = {};
-    for(let i = 1; i <= 10; i ++){
-        testScore[i] = {
-            weight : test[i]["answers"][reverseMultiple[pheno[i]["chosenAnswer"]]]["weight"]
-        }
-    }
-    for(let i in testScore){
-        finalBestScore += testScore[i]['weight']
-    }
+    let finalBest = geneticalgorithm.scoredPopulation()[0];
     let algoStop = process.hrtime(algoStart)
-    console.log("\nBest phenotype: ", pheno)
-    console.log("Final score: ", finalBestScore)
+    console.log("Best phenotype: ", finalBest.phenotype)
+    console.log("Final score: ", finalBest.score)
     console.log("Algorithm completed in " + generation + " generations.")
     console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
 }
