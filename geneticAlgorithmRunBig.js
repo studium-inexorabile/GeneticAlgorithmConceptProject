@@ -65,8 +65,6 @@ function mutationFunction (oldPhenotype) {
     }else{
         if (Math.random() > 0.4) return oldPhenotype;
     }
-    
-
     for(let i = 1; i <= 100; i++){
         // value can be changed here to control amount of genes in phenotype that
         // can be changed. higher number means less genes are mutated
