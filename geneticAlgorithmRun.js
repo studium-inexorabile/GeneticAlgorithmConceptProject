@@ -137,7 +137,7 @@ function fitnessFunction(phenotype) {
             }
         break;
     }
-    return Math.abs(fitness)
+    return fitness
 }
 
 // loop continues to run algorithm and evolve new generations until given criteria is met

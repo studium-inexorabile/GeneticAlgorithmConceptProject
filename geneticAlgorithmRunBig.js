@@ -18,7 +18,8 @@ const reverseMultiple = {
     M:12
 }
 const multipleChoice = ['A','B','C','D','E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
-
+let generation = 1;
+let continueEvolve = true;
 // configures functions used inside genetic algorithm
 // then passes configuration to GA constructor
 let config = {
@@ -31,8 +32,11 @@ let config = {
 let geneticalgorithm = GeneticAlgorithmConstructor( config )
 
 // command line argument that determines target range (options: "low", "low-medium", "medium", "high-medium", "high")
-const goal = process.argv[2]
+// defaults to "medium"
+let goal = process.argv[2]
+if(!goal) goal = 'medium'
 
+//returns a randomly filled phenotype to populate GA
 function createPhenotype() {
     let phenotype = {}
     for(let i = 1; i <= 100; i++){
@@ -59,7 +63,8 @@ function mutationFunction (oldPhenotype) {
     let resultPhenotype = {}
     oldPhenotype = tryParse(oldPhenotype)
     // value can be changed here to control amount of phenotypes that are mutated
-    // higher number means less mutation
+    // higher number means more mutation
+    // to get over maxima issues, mutation increases after 1500 generations
     if(generation > 1500){
         if (Math.random() > 0.8) return oldPhenotype;
     }else{
@@ -68,20 +73,13 @@ function mutationFunction (oldPhenotype) {
     for(let i = 1; i <= 100; i++){
         // value can be changed here to control amount of genes in phenotype that
         // can be changed. higher number means less genes are mutated
-        if(generation % 1000 == 0){
+        if(Math.random() >= 0.7){
             let available = multipleChoice.filter((item) => item != oldPhenotype[i]["chosenAnswer"])
             resultPhenotype[i] = {
                 chosenAnswer :available[Math.floor(Math.random() * available.length)]
             }
         }else{
-            if(Math.random() >= 0.7){
-                let available = multipleChoice.filter((item) => item != oldPhenotype[i]["chosenAnswer"])
-                resultPhenotype[i] = {
-                    chosenAnswer :available[Math.floor(Math.random() * available.length)]
-                }
-            }else{
-                resultPhenotype[i] = oldPhenotype[i]
-            }
+            resultPhenotype[i] = oldPhenotype[i]
         }
     }
 	return resultPhenotype
@@ -155,61 +153,54 @@ function fitnessFunction(phenotype) {
 
 // loop continues to run algorithm and evolve new generations until given criteria is met
 // criteria is determined by command line argument 'goal'
-let generation = 1;
-let continueEvolve = true;
-while (continueEvolve) {
-    let score = geneticalgorithm.bestScore()
-    switch(goal){
-        case "low" :
-            if(score > 0 && score < 307.1){
-                continueEvolve = false;
-            }
-        break;
-        case "low-medium":
-            if(score >= 307.1 && score < 472.1){
-                continueEvolve = false;
-            }
-        break;
-        case "medium":
-            if(score >= 472.1 && score < 637.1){
-                continueEvolve = false;
-            }
-        break;
-        case "high-medium":
-            if(score >= 637.1 && score < 802.1){
-                continueEvolve = false;
-            }
-        break;
-        case "high":
-            if(score >= 802.1 && score < 967.1){
-                continueEvolve = false;
-            }
-        break;
+const runGeneticAlgorithm = () => {
+    while (continueEvolve) {
+        let score = geneticalgorithm.bestScore()
+        switch(goal){
+            case "low" :
+                if(score > 0 && score < 307.1){
+                    continueEvolve = false;
+                }
+            break;
+            case "low-medium":
+                if(score >= 307.1 && score < 472.1){
+                    continueEvolve = false;
+                }
+            break;
+            case "medium":
+                if(score >= 472.1 && score < 637.1){
+                    continueEvolve = false;
+                }
+            break;
+            case "high-medium":
+                if(score >= 637.1 && score < 802.1){
+                    continueEvolve = false;
+                }
+            break;
+            case "high":
+                if(score >= 802.1 && score < 967.1){
+                    continueEvolve = false;
+                }
+            break;
+        }
+        generation++;
+        //method evolves to next generation
+        geneticalgorithm.evolve()
+        // console.log("**Generation - ", generation)
+        // console.log("**Best score of generation - ", geneticalgorithm.bestScore())
     }
-    generation++;
-
-    //method evolves to next generation
-    geneticalgorithm.evolve()
-    
-    console.log("**Generation - ", generation)
-    console.log("**Best score of generation - ", geneticalgorithm.bestScore())
 }
 
 // score for best phenotype is calculated so that it can be displayed.
 // relevant metrics are displayed for correct phenotype
-let finalBestScore = 0;
-let pheno = tryParse(geneticalgorithm.best())
-let testScore = {};
-for(let i = 1; i <= 100; i ++){
-    testScore[i] = {
-        weight : test[i]["answers"][reverseMultiple[pheno[i]["chosenAnswer"]]]["weight"]
-    }
+const runMetrics = () => {
+    let finalBest = geneticalgorithm.scoredPopulation()[0];
+    let algoStop = process.hrtime(algoStart)
+    console.log("Best phenotype: ", finalBest.phenotype)
+    console.log("Final score: ", finalBest.score)
+    console.log("Algorithm completed in " + generation + " generations.")
+    console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
 }
-for(let i in testScore){
-    finalBestScore += testScore[i]['weight']
-}
-console.log("\nBest phenotype: ", pheno)
-console.log("Algorithm completed in " + generation + " generations.")
-console.log("Final score: ", finalBestScore)
-let algoStop = process.hrtime(algoStart)
-console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
+
+runGeneticAlgorithm();
+runMetrics();
