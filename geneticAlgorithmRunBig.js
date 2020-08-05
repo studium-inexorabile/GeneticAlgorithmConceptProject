@@ -85,9 +85,9 @@ function mutationFunction (oldPhenotype) {
 	return resultPhenotype
 }
 
-// function 'mates' top performers by taking two phenotypes 
-// and creating two new phenotypes by halving the parents
-// and putting the halves together with the other parent's halves
+// function 'mates' top performers by picking halfway point in parent phenotypes,
+// answers on either side of that point are swapped between 
+// the two parent phenotypes, and two offspring are returned.
 function crossoverFunction(phenoTypeA, phenoTypeB) {
     let result1 = {} , result2 = {}
     phenoTypeA = tryParse(phenoTypeA)
@@ -186,18 +186,17 @@ const runGeneticAlgorithm = () => {
         generation++;
         //method evolves to next generation
         geneticalgorithm.evolve()
-        // console.log("**Generation - ", generation)
-        // console.log("**Best score of generation - ", geneticalgorithm.bestScore())
+        console.log("**Generation - ", generation)
+        console.log("**Best score of generation - ", geneticalgorithm.bestScore())
     }
 }
 
 // score for best phenotype is calculated so that it can be displayed.
 // relevant metrics are displayed for correct phenotype
 const runMetrics = () => {
-    let finalBest = geneticalgorithm.scoredPopulation()[0];
     let algoStop = process.hrtime(algoStart)
-    console.log("Best phenotype: ", finalBest.phenotype)
-    console.log("Final score: ", finalBest.score)
+    console.log("Best phenotype: ", geneticalgorithm.scoredPopulation()[0].phenotype)
+    console.log("Final score: ", geneticalgorithm.bestScore())
     console.log("Algorithm completed in " + generation + " generations.")
     console.log('Execution time: %ds %dms', algoStop[0], algoStop[1] / 1000000)
 }
