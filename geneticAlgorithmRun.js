@@ -1,6 +1,6 @@
-let test = require('./test.json')
-let GeneticAlgorithmConstructor = require('geneticalgorithm')
-let algoStart = process.hrtime()
+const test = require('./test.json');
+const GeneticAlgorithmConstructor = require('geneticalgorithm');
+const algoStart = process.hrtime();
 //variables
 const reverseMultiple = {
     A: 0,
@@ -8,13 +8,13 @@ const reverseMultiple = {
     C:2,
     D:3,
     E:4
-}
-const multipleChoice = ['A','B','C','D','E']
+};
+const multipleChoice = ['A','B','C','D','E'];
 let generation = 1;
 let continueEvolve = true;
 // command line argument that determines target range (options: "low", "low-medium", "medium", "high-medium", "high")
-let goal = process.argv[2]
-if(!goal) goal = 'medium'
+let goal = process.argv[2];
+if(!goal) goal = 'medium';
 
 // configures functions used inside genetic algorithm
 // then passes configuration to GA constructor
@@ -25,7 +25,7 @@ let config = {
     population: [createPhenotype()],
     populationSize: 10
 }
-let geneticalgorithm = GeneticAlgorithmConstructor( config ) 
+const geneticalgorithm = GeneticAlgorithmConstructor( config ) 
 
 // helper function that will try to parse passed in JSON
 const tryParse = (item) => {

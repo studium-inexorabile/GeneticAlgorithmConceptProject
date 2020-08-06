@@ -1,6 +1,6 @@
-let test = require('./testBig.json')
-let GeneticAlgorithmConstructor = require('geneticalgorithm')
-let algoStart = process.hrtime()
+const test = require('./testBig.json')
+const GeneticAlgorithmConstructor = require('geneticalgorithm')
+const algoStart = process.hrtime()
 //variables
 const reverseMultiple = {
     A: 0,
@@ -17,24 +17,23 @@ const reverseMultiple = {
     L:11,
     M:12
 }
-const multipleChoice = ['A','B','C','D','E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
+const multipleChoice = ['A','B','C','D','E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
 let generation = 1;
 let continueEvolve = true;
 // configures functions used inside genetic algorithm
 // then passes configuration to GA constructor
-let config = {
+const config = {
     mutationFunction: mutationFunction,
     crossoverFunction: crossoverFunction,
     fitnessFunction: fitnessFunction,
     population: [ createPhenotype() ],
-    populationSize: 40
+    populationSize: 10
 }
-let geneticalgorithm = GeneticAlgorithmConstructor( config )
-
+const geneticalgorithm = GeneticAlgorithmConstructor( config );
 // command line argument that determines target range (options: "low", "low-medium", "medium", "high-medium", "high")
 // defaults to "medium"
-let goal = process.argv[2]
-if(!goal) goal = 'medium'
+let goal = process.argv[2];
+if(!goal) goal = 'medium';
 
 //returns a randomly filled phenotype to populate GA
 function createPhenotype() {
@@ -61,25 +60,25 @@ const tryParse = (item) => {
 // function used to introduce mutation to population
 function mutationFunction (oldPhenotype) {
     let resultPhenotype = {}
-    oldPhenotype = tryParse(oldPhenotype)
+    let parsedOldPhenotype = tryParse(oldPhenotype)
     // value can be changed here to control amount of phenotypes that are mutated
     // higher number means more mutation
     // to get over maxima issues, mutation increases after 1500 generations
     if(generation > 1500){
-        if (Math.random() > 0.8) return oldPhenotype;
+        if (Math.random() > 0.8) return parsedOldPhenotype;
     }else{
-        if (Math.random() > 0.4) return oldPhenotype;
+        if (Math.random() > 0.5) return parsedOldPhenotype;
     }
     for(let i = 1; i <= 100; i++){
         // value can be changed here to control amount of genes in phenotype that
         // can be changed. higher number means less genes are mutated
-        if(Math.random() >= 0.7){
-            let available = multipleChoice.filter((item) => item != oldPhenotype[i]["chosenAnswer"])
+        if(Math.random() >= 0.8){
+            let available = multipleChoice.filter((item) => item != parsedOldPhenotype[i]["chosenAnswer"])
             resultPhenotype[i] = {
                 chosenAnswer :available[Math.floor(Math.random() * available.length)]
             }
         }else{
-            resultPhenotype[i] = oldPhenotype[i]
+            resultPhenotype[i] = parsedOldPhenotype[i]
         }
     }
 	return resultPhenotype
@@ -90,15 +89,15 @@ function mutationFunction (oldPhenotype) {
 // the two parent phenotypes, and two offspring are returned.
 function crossoverFunction(phenoTypeA, phenoTypeB) {
     let result1 = {} , result2 = {}
-    phenoTypeA = tryParse(phenoTypeA)
-    phenoTypeB = tryParse(phenoTypeB)
-    for(let i = 0; i < 50; i++){
-        result1[i + 1] = phenoTypeA[i + 1]
-        result2[i + 1] = phenoTypeB[i + 1]
+    const parsedPhenoTypeA = tryParse(phenoTypeA)
+    const parsedPhenoTypeB = tryParse(phenoTypeB)
+    for(let i = 1; i <= 50; i++){
+        result1[i] = parsedPhenoTypeA[i]
+        result2[i] = parsedPhenoTypeB[i]
     }
-    for(let i = 50; i < 100; i++){
-        result1[i + 1] = phenoTypeB[i + 1]
-        result2[i + 1] = phenoTypeA[i + 1]
+    for(let i = 51; i <= 100; i++){
+        result1[i] = parsedPhenoTypeB[i]
+        result2[i] = parsedPhenoTypeA[i]
     }
 	return [result1,result2]
 }
@@ -107,13 +106,13 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
 function fitnessFunction(phenotype) {
     let fitness = 0
     let testScore = {}
-    phenotype = tryParse(phenotype)
+    const parsedPhenotype = tryParse(phenotype)
     // creates an object that combines the answers(genes) of a phenotype
     // and its corresponding weight (found in test)
     for(let i = 1; i <= 100; i ++){
         testScore[i] = {
-            answer : phenotype[i]["chosenAnswer"],
-            weight : test[i]["answers"][reverseMultiple[phenotype[i]["chosenAnswer"]]]["weight"]
+            answer : parsedPhenotype[i]["chosenAnswer"],
+            weight : test[i]["answers"][reverseMultiple[parsedPhenotype[i]["chosenAnswer"]]]["weight"]
         }
     }
     //combines all weight values into single value
@@ -121,6 +120,7 @@ function fitnessFunction(phenotype) {
         fitness += testScore[i]['weight']
     }
     // determines how to modify fitness score based on desired score-range
+    // subtracts fitness score from top end of desired ranged
     switch(goal){
         case "low" :
             if(fitness > 307.1){
@@ -186,15 +186,17 @@ const runGeneticAlgorithm = () => {
         generation++;
         //method evolves to next generation
         geneticalgorithm.evolve()
-        console.log("**Generation - ", generation)
-        console.log("**Best score of generation - ", geneticalgorithm.bestScore())
+        if(generation % 100 == 0){
+            console.log("**Generation - ", generation)
+            console.log("**Best score of generation - ", geneticalgorithm.bestScore())
+        }
     }
 }
 
 // score for best phenotype is calculated so that it can be displayed.
 // relevant metrics are displayed for correct phenotype
 const runMetrics = () => {
-    let algoStop = process.hrtime(algoStart)
+    const algoStop = process.hrtime(algoStart)
     console.log("Best phenotype: ", geneticalgorithm.scoredPopulation()[0].phenotype)
     console.log("Final score: ", geneticalgorithm.bestScore())
     console.log("Algorithm completed in " + generation + " generations.")
