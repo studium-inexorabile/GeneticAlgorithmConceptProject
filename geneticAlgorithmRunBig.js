@@ -1,25 +1,13 @@
 const test = require('./testBig.json')
 const GeneticAlgorithmConstructor = require('geneticalgorithm')
 const algoStart = process.hrtime()
-//variables
-const reverseMultiple = {
-    A: 0,
-    B:1,
-    C:2,
-    D:3,
-    E:4,
-    F:5,
-    G:6,
-    H:7,
-    I:8,
-    J:9,
-    K:10,
-    L:11,
-    M:12
-}
+
+//global variables
 const multipleChoice = ['A','B','C','D','E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+const breakpoint = process.argv[2] || 'medium';
 let generation = 1;
 let continueEvolve = true;
+
 // configures functions used inside genetic algorithm
 // then passes configuration to GA constructor
 const config = {
@@ -30,10 +18,6 @@ const config = {
     populationSize: 10
 }
 const geneticalgorithm = GeneticAlgorithmConstructor( config );
-// command line argument that determines target range (options: "low", "low-medium", "medium", "high-medium", "high")
-// defaults to "medium"
-let goal = process.argv[2];
-if(!goal) goal = 'medium';
 
 //returns a randomly filled phenotype to populate GA
 function createPhenotype() {
@@ -105,6 +89,7 @@ function crossoverFunction(phenoTypeA, phenoTypeB) {
 // function to determine fitness of phenotype.
 function fitnessFunction(phenotype) {
     let fitness = 0
+    let combinedWeight = 0
     let testScore = {}
     const parsedPhenotype = tryParse(phenotype)
     // creates an object that combines the answers(genes) of a phenotype
@@ -112,51 +97,41 @@ function fitnessFunction(phenotype) {
     for(let i = 1; i <= 100; i ++){
         testScore[i] = {
             answer : parsedPhenotype[i]["chosenAnswer"],
-            weight : test[i]["answers"][reverseMultiple[parsedPhenotype[i]["chosenAnswer"]]]["weight"]
+            weight : test[i]["answers"][multipleChoice.indexOf(parsedPhenotype[i]["chosenAnswer"])]["weight"]
         }
     }
     //combines all weight values into single value
     for(let i in testScore){
-        fitness += testScore[i]['weight']
+        combinedWeight += testScore[i]['weight']
     }
-    // determines how to modify fitness score based on desired score-range
-    // subtracts fitness score from top end of desired ranged
-    switch(goal){
+    // determines how to modify fitness score based on desired score-range - subtracts 
+    // fitness score from top end of desired ranged if combinedWeight is higher than breakpoint
+    switch(breakpoint){
         case "low" :
-            if(fitness > 307.1){
-                fitness = 307.1 - fitness
-            }
+            combinedWeight > 307.1 ? fitness = 307.1 - combinedWeight : fitness = combinedWeight
         break;
         case "low-medium":
-            if(fitness > 472.1){
-                fitness = 472.1 - fitness
-            }
+            combinedWeight > 472.1 ? fitness = 472.1 - combinedWeight : fitness = combinedWeight
         break;
         case "medium":
-            if(fitness > 637.1){
-                fitness = 637.1 - fitness
-            }
+            combinedWeight > 637.1 ? fitness = 637.1 - combinedWeight : fitness = combinedWeight
         break;
         case "high-medium":
-            if(fitness > 802.1){
-                fitness = 802.1 - fitness
-            }
+            combinedWeight > 802.1 ? fitness = 802.1 - combinedWeight : fitness = combinedWeight
         break;
         case "high":
-            if(fitness > 967.1){
-                fitness = 967.1 - fitness
-            }
+            combinedWeight > 967.1 ? fitness = 967.1 - combinedWeight : fitness = combinedWeight
         break;
     }
     return fitness
 }
 
 // loop continues to run algorithm and evolve new generations until given criteria is met
-// criteria is determined by command line argument 'goal'
+// criteria is determined by command line argument 'breakpoint'
 const runGeneticAlgorithm = () => {
     while (continueEvolve) {
         let score = geneticalgorithm.bestScore()
-        switch(goal){
+        switch(breakpoint){
             case "low" :
                 if(score > 0 && score < 307.1){
                     continueEvolve = false;
