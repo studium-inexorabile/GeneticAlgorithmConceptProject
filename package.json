@@ -4,10 +4,7 @@
   "description": "",
   "main": "testCreation.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "create": "testCreation.js",
-    "take": "testTaking.js",
-    "score": "testScoring.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",

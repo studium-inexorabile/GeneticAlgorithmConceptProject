@@ -11,9 +11,9 @@ let continueEvolve = true;
 // configures functions used inside genetic algorithm
 // then passes configuration to GA constructor
 const config = {
-    mutationFunction: mutationFunction,
-    crossoverFunction: crossoverFunction,
-    fitnessFunction: fitnessFunction,
+    mutationFunction,
+    crossoverFunction,
+    fitnessFunction,
     population: [ createPhenotype() ],
     populationSize: 10
 }
